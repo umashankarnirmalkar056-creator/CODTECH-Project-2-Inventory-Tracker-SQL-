@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMS Pro - SQL Inventory Tracker</title>
+    
+    <link rel="stylesheet" href="inventory_style.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div id="loginPage" class="login-container">
+        <div class="login-box">
+            <h2>Inventory Tracker Portal Login</h2>
+            
+            <div class="input-group">
+                <label>Username / Registered Email</label>
+                <div class="input-wrapper">
+                    <i class="fa-regular fa-user"></i>
+                    <input type="email" id="email" placeholder="admin@gmail.com" required>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>Security Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="admin123" required>
+                </div>
+                <div class="forgot-pass">
+                    <a href="#" onclick="alert('Demo Pass: admin123')">Forgot password?</a>
+                </div>
+            </div>
+            
+            <button class="login-btn" onclick="handleLogin()">SECURE LOGIN</button>
+            
+            <button class="autofill-btn" onclick="autoFillDemoCredentials()">
+                <i class="fa-solid fa-bolt-lightning"></i> Auto Fill Demo Access
+            </button>
+            
+            <p id="loginError"></p>
+            
+            <div class="social-section">
+                <p>Or Sign Up Using</p>
+                <div class="social-icons">
+                    <a href="#" class="icon-fb"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#" class="icon-tw"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="icon-gp"><i class="fa-brands fa-google"></i></a>
+                </div>
+            </div>
+
+            <div class="demo-credentials-box">
+                <strong>💡 Dashboard Access Token:</strong>
+                <div>Email: <code>admin@gmail.com</code></div>
+                <div>Pass: <code>admin123</code></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display:none;">
+        <header>
+            <h1>📦 IMS<span>Pro</span> Inventory Tracker</h1>
+            <div class="header-right-group">
+                <div class="db-status-badge">
+                    <i class="fa-solid fa-database"></i> SQLite/MySQL Engine Active
+                </div>
+                <button class="pdf-btn" onclick="window.print()"><i class="fa-solid fa-file-pdf"></i> Download PDF</button>
+                <button class="logout-btn" onclick="handleLogout()"><i class="fa-solid fa-power-off"></i> Logout</button>
+            </div>
+        </header>
+
+        <section class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="totalProducts">0</h3>
+                    <p>Total Items</p>
+                </div>
+                <div class="stat-icon blue-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="lowStockCount" style="color: #f59e0b;">0</h3>
+                    <p>Low Stock Alerts</p>
+                </div>
+                <div class="stat-icon amber-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-info">
+                    <h3 id="totalValuation">₹0.00</h3>
+                    <p>Inventory Valuation</p>
+                </div>
+                <div class="stat-icon emerald-icon"><i class="fa-solid fa-wallet"></i></div>
+            </div>
+        </section>
+
+        <div class="controls-container">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="searchBar" placeholder="Search by product ID or name..." onkeyup="filterInventoryData()">
+            </div>
+            <div class="filter-wrapper">
+                <select id="filterCategory" onchange="filterInventoryData()">
+                    <option value="All">All Categories</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Peripherals">Peripherals</option>
+                    <option value="Storage">Storage</option>
+                    <option value="Accessories">Accessories</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="workspace-grid">
+            <div class="form-container">
+                <h3 id="formTitle"><i class="fa-solid fa-plus"></i> Add New Product</h3>
+                <div class="form-group">
+                    <label>Product Name</label>
+                    <input type="text" id="prodName" placeholder="e.g., Mechanical Keyboard">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="prodCategory">
+                        <option value="Electronics">Electronics</option>
+                        <option value="Peripherals">Peripherals</option>
+                        <option value="Storage">Storage</option>
+                        <option value="Accessories">Accessories</option>
+                    </select>
+                </div>
+                <div class="form-grid-row" style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>Price (₹)</label>
+                        <input type="number" id="prodPrice" placeholder="Price">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>Quantity (Qty)</label>
+                        <input type="number" id="prodQty" placeholder="Stock">
+                    </div>
+                </div>
+                <button class="action-btn" id="submitBtn" onclick="handleProductSubmit()">Add to Inventory</button>
+            </div>
+
+            <div class="table-container">
+                <table id="inventoryTable">
+                    <thead>
+                        <tr>
+                            <th>Product ID</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock Qty</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="inventoryTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <footer class="app-footer">
+            <p>© 2026 Inventory Management System</p>
+            <p>Developed By <span>Umashankar</span> | Internship Project</p>
+        </footer>
+    </div>
+
+    <script src="inventory_script.js"></script>
+</body>
+</html>
